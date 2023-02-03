@@ -1,65 +1,126 @@
-import { expect, countResources, haveResource } from '@aws-cdk/assertions';
+import { Match, Template } from '@aws-cdk/assertions';
 import * as cdk from '@aws-cdk/core';
+import { StackDeployment } from 'aws-cdk-lib/pipelines';
 import * as Devio from '../lib/aws-1vpc-3private-subnet-stack';
 
-test('Context', () => {
-  const app = new cdk.App({
-    context: {
-      'systemName': 'starwars',
-      'envType': 'prd'
-    }
-  });
-  const stack = new Devio.DevioStack(app, 'DevioStack');
+const app = new cdk.App();
+const stack = new Devio.DevioStack(app, 'MyTestStack');
+const template = Template.fromStack(stack);
 
-  expect(stack).to(haveResource('AWS::EC2::VPC', {
-    Tags: [{ 'Key': 'Name', 'Value': 'starwars-prd-vpc' }]
-  }));
-});
+const getResouceIds = (type: string, props?: any): string[] =>
+  Object.keys(template.findResources(type, props ? {properties: props } : {} ));
 
-test('Vpc', () => {
-  const app = new cdk.App();
-  const stack = new Devio.DevioStack(app, 'DevioStack');
+const getResouceId = (type: string, props?: any): string => {
+  const resouceIds = getResouceIds(type, props);
+  if(resouceIds.length !== 1)
+    throw new Error('リソースが無いか1つに特定出来ません');
+  return resouceIds[0];
+};
 
-  expect(stack).to(countResources('AWS::EC2::VPC', 1));
-  expect(stack).to(haveResource('AWS::EC2::VPC', {
+test('VPCがCidr10.0.0.0/16で1つ作成されること', () => {
+  template.resourceCountIs('AWS::EC2::VPC', 1);
+  template.hasResourceProperties('AWS::EC2::VPC', {
     CidrBlock: '10.0.0.0/16',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-vpc' }]
-  }));
+    Tags: [{ 'Key': 'Name', 'Value': 'starwars-prd-vpc' }]
+  });
 });
 
-test('Subnet', () => {
-  const app = new cdk.App();
-  const stack = new Devio.DevioStack(app, 'DevioStack');
+//後で使うためのVPCのリソースIDを取得
+const vpcId = getResouceId('AWS::EC2::VPC');
 
-  expect(stack).to(countResources('AWS::EC2::Subnet', 6));
-  expect(stack).to(haveResource('AWS::EC2::Subnet', {
+test('サブネットが9つ作成されること', () => {
+  template.resourceCountIs('AWS::EC2::Subnet', 9);
+});
+
+//パブリックサブネット
+test('パブリックサブネットが/24で3つ作成されること', () => {
+  template.resourceCountIs('AWS::EC2::Subnet', 3);
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: Match.stringLikeRegexp('.*/24'),
+    MapPublicIpOnLaunch: true
+  });
+});
+
+test('AZ-aにパブリックサブネットが1つ作成されること', () => {
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: '10.0.0.0/24',
+    AvailabilityZone: 'ap-northeast-1a',
+    Tags: [{ 'Key': 'Name', 'Value': 'public-subnet-1a-1' }]
+  });
+});
+
+test('AZ-cにパブリックサブネットが1つ作成されること', () => {
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: '10.0.1.0/24',
+    AvailabilityZone: 'ap-northeast-1c',
+    Tags: [{ 'Key': 'Name', 'Value': 'public-subnet-1c-1' }]
+  });
+});
+
+test('AZ-dにパブリックサブネットが1つ作成されること', () => {
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: '10.0.2.0/24',
+    AvailabilityZone: 'ap-northeast-1d',
+    Tags: [{ 'Key': 'Name', 'Value': 'public-subnet-1d-1' }]
+  });
+});
+
+
+//プライベートサブネット
+test('プライベートサブネットが/24で6つ作成されること', () => {
+  template.resourceCountIs('AWS::EC2::Subnet', 6);
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: Match.stringLikeRegexp('.*/24'),
+    MapPublicIpOnLaunch: false
+  });
+});
+
+test('AZ-aにプライベートサブネットが2つ作成されること', () => {
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: '10.0.10.0/24',
+    AvailabilityZone: 'ap-northeast-1a',
+    Tags: [{ 'Key': 'Name', 'Value': 'private-subnet-1a-1' }]
+  });
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: '10.0.20.0/24',
+    AvailabilityZone: 'ap-northeast-1a',
+    Tags: [{ 'Key': 'Name', 'Value': 'private-subnet-1a-2' }]
+  });
+});
+
+test('AZ-cにプライベートサブネットが2つ作成されること', () => {
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
     CidrBlock: '10.0.11.0/24',
-    AvailabilityZone: 'ap-northeast-1a',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-subnet-public-1a' }]
-  }));
-  expect(stack).to(haveResource('AWS::EC2::Subnet', {
-    CidrBlock: '10.0.12.0/24',
     AvailabilityZone: 'ap-northeast-1c',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-subnet-public-1c' }]
-  }));
-  expect(stack).to(haveResource('AWS::EC2::Subnet', {
+    Tags: [{ 'Key': 'Name', 'Value': 'private-subnet-1c-1' }]
+  });
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
     CidrBlock: '10.0.21.0/24',
-    AvailabilityZone: 'ap-northeast-1a',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-subnet-app-1a' }]
-  }));
-  expect(stack).to(haveResource('AWS::EC2::Subnet', {
+    AvailabilityZone: 'ap-northeast-1c',
+    Tags: [{ 'Key': 'Name', 'Value': 'private-subnet-1c-2' }]
+  });
+});
+
+test('AZ-dにプライベートサブネットが2つ作成されること', () => {
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
+    CidrBlock: '10.0.12.0/24',
+    AvailabilityZone: 'ap-northeast-1d',
+    Tags: [{ 'Key': 'Name', 'Value': 'private-subnet-1d-1' }]
+  });
+  template.hasResourceProperties('AWS::EC2::Subnet', {
+    VpcId: { Ref: vpcId },
     CidrBlock: '10.0.22.0/24',
-    AvailabilityZone: 'ap-northeast-1c',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-subnet-app-1c' }]
-  }));
-  expect(stack).to(haveResource('AWS::EC2::Subnet', {
-    CidrBlock: '10.0.31.0/24',
-    AvailabilityZone: 'ap-northeast-1a',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-subnet-db-1a' }]
-  }));
-  expect(stack).to(haveResource('AWS::EC2::Subnet', {
-    CidrBlock: '10.0.32.0/24',
-    AvailabilityZone: 'ap-northeast-1c',
-    Tags: [{ 'Key': 'Name', 'Value': 'undefined-undefined-subnet-db-1c' }]
-  }));
+    AvailabilityZone: 'ap-northeast-1d',
+    Tags: [{ 'Key': 'Name', 'Value': 'private-subnet-1d-2' }]
+  });
 });
