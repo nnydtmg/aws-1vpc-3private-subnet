@@ -1,5 +1,13 @@
 import * as cdk from '@aws-cdk/core';
-import { CfnVPC, CfnSubnet } from '@aws-cdk/aws-ec2';
+import {
+   CfnVPC,
+   CfnSubnet,
+   CfnInternetGateway,
+   CfnVPCGatewayAttachment,
+   CfnRouteTable,
+   CfnRoute,
+   CfnSubnetRouteTableAssociation 
+  } from '@aws-cdk/aws-ec2';
 
 export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
@@ -8,11 +16,21 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
     const systemName = this.node.tryGetContext('systemName');
     const envType = this.node.tryGetContext('envType');
 
+    //VPC
     const vpc = new CfnVPC(this, 'Vpc', {
       cidrBlock: '10.0.0.0/16',
       tags: [{ key: 'Name', value: `${systemName}-${envType}-vpc` }]
     });
 
+    //InternetGateway
+    const igw = new CfnInternetGateway(this, 'igw', {
+    })
+    new CfnVPCGatewayAttachment(this, 'igwAttachment', {
+      internetGatewayId: igw.ref,
+      vpcId: vpc.ref
+    })
+
+    //PublicSubnet
     const subnetPublic1a = new CfnSubnet(this, 'SubnetPublic1a', {
       cidrBlock: '10.0.0.0/24',
       vpcId: vpc.ref,
@@ -35,6 +53,7 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
       tags: [{ key: 'Name', value: `${systemName}-${envType}-public-subnet-1d-1` }]
     })
 
+    //PrivateSubnet
     const subnetPrivate1a1 = new CfnSubnet(this, 'SubnetPrivate1a1', {
       cidrBlock: '10.0.10.0/24',
       vpcId: vpc.ref,
@@ -76,6 +95,28 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
       availabilityZone: 'ap-northeast-1d',
       mapPublicIpOnLaunch: false,
       tags: [{ key: 'Name', value: `${systemName}-${envType}-private-subnet-1d-2` }]
+    })
+
+    //RouteTable
+    const publicRouteTable = new CfnRouteTable(this, 'PublicRouteTable', {
+      vpcId: vpc.ref,
+    })
+    new CfnRoute(this, 'PublicRoute', {
+      routeTableId: publicRouteTable.ref,
+      destinationCidrBlock: '0.0.0.0/0',
+      gatewayId: igw.ref,
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet1RouteTableAssociation', {
+      routeTableId: publicRouteTable.ref,
+      subnetId: subnetPublic1a.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet2RouteTableAssociation', {
+      routeTableId: publicRouteTable.ref,
+      subnetId: subnetPublic1c.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet2RouteTableAssociation', {
+      routeTableId: publicRouteTable.ref,
+      subnetId: subnetPublic1d.ref
     })
   }
 }
