@@ -100,6 +100,10 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
     //RouteTable
     const publicRouteTable = new CfnRouteTable(this, 'PublicRouteTable', {
       vpcId: vpc.ref,
+      tags: [{
+        key: 'Name',
+        value: `${systemName}-${envType}-RouteTable`,
+      }]
     })
     new CfnRoute(this, 'PublicRoute', {
       routeTableId: publicRouteTable.ref,
