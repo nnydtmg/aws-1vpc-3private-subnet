@@ -106,15 +106,15 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
       destinationCidrBlock: '0.0.0.0/0',
       gatewayId: igw.ref,
     })
-    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet1RouteTableAssociation', {
+    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet1aRouteTableAssociation', {
       routeTableId: publicRouteTable.ref,
       subnetId: subnetPublic1a.ref
     })
-    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet2RouteTableAssociation', {
+    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet1cRouteTableAssociation', {
       routeTableId: publicRouteTable.ref,
       subnetId: subnetPublic1c.ref
     })
-    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet2RouteTableAssociation', {
+    new CfnSubnetRouteTableAssociation(this, 'PublicSubnet1dRouteTableAssociation', {
       routeTableId: publicRouteTable.ref,
       subnetId: subnetPublic1d.ref
     })
