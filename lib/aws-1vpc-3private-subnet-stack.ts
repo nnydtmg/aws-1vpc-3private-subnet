@@ -1,7 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { CfnVPC, CfnSubnet } from '@aws-cdk/aws-ec2';
 
-export class DevioStack extends cdk.Stack {
+export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -10,44 +10,62 @@ export class DevioStack extends cdk.Stack {
 
     const vpc = new CfnVPC(this, 'Vpc', {
       cidrBlock: '10.0.0.0/16',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-vpc` }]
+      tags: [{ key: 'Name', value: `template-vpc` }]
     });
 
     const subnetPublic1a = new CfnSubnet(this, 'SubnetPublic1a', {
-      cidrBlock: '10.0.11.0/24',
+      cidrBlock: '10.0.0.0/24',
       vpcId: vpc.ref,
       availabilityZone: 'ap-northeast-1a',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-subnet-public-1a` }]
+      tags: [{ key: 'Name', value: `template-public-subnet-1a-1` }]
     })
     const subnetPublic1c = new CfnSubnet(this, 'SubnetPublic1c', {
-      cidrBlock: '10.0.12.0/24',
+      cidrBlock: '10.0.1.0/24',
       vpcId: vpc.ref,
       availabilityZone: 'ap-northeast-1c',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-subnet-public-1c` }]
+      tags: [{ key: 'Name', value: `template-public-subnet-1c-1` }]
     })
-    const subnetApp1a = new CfnSubnet(this, 'SubnetApp1a', {
+    const subnetPublic1d = new CfnSubnet(this, 'SubnetPublic1d', {
+      cidrBlock: '10.0.2.0/24',
+      vpcId: vpc.ref,
+      availabilityZone: 'ap-northeast-1d',
+      tags: [{ key: 'Name', value: `template-public-subnet-1d-1` }]
+    })
+    const subnetPrivate1a1 = new CfnSubnet(this, 'SubnetPrivate1a1', {
+      cidrBlock: '10.0.10.0/24',
+      vpcId: vpc.ref,
+      availabilityZone: 'ap-northeast-1a',
+      tags: [{ key: 'Name', value: `template-private-subnet-1a-1` }]
+    })
+    const subnetPrivate1a2 = new CfnSubnet(this, 'SubnetPrivate1a2', {
+      cidrBlock: '10.0.20.0/24',
+      vpcId: vpc.ref,
+      availabilityZone: 'ap-northeast-1a',
+      tags: [{ key: 'Name', value: `template-private-subnet-1a-2` }]
+    })
+    const subnetPrivate1c1 = new CfnSubnet(this, 'SubnetPrivate1c1', {
+      cidrBlock: '10.0.11.0/24',
+      vpcId: vpc.ref,
+      availabilityZone: 'ap-northeast-1c',
+      tags: [{ key: 'Name', value: `template-private-subnet-1c-1` }]
+    })
+    const subnetPrivate1c2 = new CfnSubnet(this, 'SubnetPrivate1c2', {
       cidrBlock: '10.0.21.0/24',
       vpcId: vpc.ref,
-      availabilityZone: 'ap-northeast-1a',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-subnet-app-1a` }]
+      availabilityZone: 'ap-northeast-1c',
+      tags: [{ key: 'Name', value: `template-private-subnet-1c-2` }]
     })
-    const subnetApp1c = new CfnSubnet(this, 'SubnetApp1c', {
+    const subnetPrivate1d1 = new CfnSubnet(this, 'SubnetPrivate1d1', {
+      cidrBlock: '10.0.12.0/24',
+      vpcId: vpc.ref,
+      availabilityZone: 'ap-northeast-1d',
+      tags: [{ key: 'Name', value: `template-private-subnet-1d-1` }]
+    })
+    const subnetPrivate1d2 = new CfnSubnet(this, 'SubnetPrivate1d2', {
       cidrBlock: '10.0.22.0/24',
       vpcId: vpc.ref,
-      availabilityZone: 'ap-northeast-1c',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-subnet-app-1c` }]
-    })
-    const subnetDb1a = new CfnSubnet(this, 'SubnetDb1a', {
-      cidrBlock: '10.0.31.0/24',
-      vpcId: vpc.ref,
-      availabilityZone: 'ap-northeast-1a',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-subnet-db-1a` }]
-    })
-    const subnetDb1c = new CfnSubnet(this, 'SubnetDb1c', {
-      cidrBlock: '10.0.32.0/24',
-      vpcId: vpc.ref,
-      availabilityZone: 'ap-northeast-1c',
-      tags: [{ key: 'Name', value: `${systemName}-${envType}-subnet-db-1c` }]
+      availabilityZone: 'ap-northeast-1d',
+      tags: [{ key: 'Name', value: `template-private-subnet-1d-2` }]
     })
   }
 }
