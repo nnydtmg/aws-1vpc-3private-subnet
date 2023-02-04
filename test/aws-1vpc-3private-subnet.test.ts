@@ -27,21 +27,15 @@ test('VPCがCidr10.0.0.0/16で1つ作成されること', () => {
 
 //後で使うためのVPCのリソースIDを取得
 const vpcId = getResouceId('AWS::EC2::VPC');
-
-test('サブネットが9つ作成されること', () => {
+test('サブネットが/24で9つ作成されること', () => {
   template.resourceCountIs('AWS::EC2::Subnet', 9);
-});
-
-//パブリックサブネット
-test('パブリックサブネットが/24で3つ作成されること', () => {
-  template.resourceCountIs('AWS::EC2::Subnet', 3);
   template.hasResourceProperties('AWS::EC2::Subnet', {
     VpcId: { Ref: vpcId },
-    CidrBlock: Match.stringLikeRegexp('.*/24'),
-    MapPublicIpOnLaunch: true
+    CidrBlock: Match.stringLikeRegexp('.*/24')
   });
 });
 
+//パブリックサブネット
 test('AZ-aにパブリックサブネットが1つ作成されること', () => {
   template.hasResourceProperties('AWS::EC2::Subnet', {
     VpcId: { Ref: vpcId },
@@ -71,15 +65,6 @@ test('AZ-dにパブリックサブネットが1つ作成されること', () => 
 
 
 //プライベートサブネット
-test('プライベートサブネットが/24で6つ作成されること', () => {
-  template.resourceCountIs('AWS::EC2::Subnet', 6);
-  template.hasResourceProperties('AWS::EC2::Subnet', {
-    VpcId: { Ref: vpcId },
-    CidrBlock: Match.stringLikeRegexp('.*/24'),
-    MapPublicIpOnLaunch: false
-  });
-});
-
 test('AZ-aにプライベートサブネットが2つ作成されること', () => {
   template.hasResourceProperties('AWS::EC2::Subnet', {
     VpcId: { Ref: vpcId },
