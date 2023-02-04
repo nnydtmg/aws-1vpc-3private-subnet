@@ -6,7 +6,8 @@ import {
    CfnVPCGatewayAttachment,
    CfnRouteTable,
    CfnRoute,
-   CfnSubnetRouteTableAssociation 
+   CfnSubnetRouteTableAssociation, 
+   VpcEndpoint
   } from '@aws-cdk/aws-ec2';
 
 export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
@@ -102,7 +103,7 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
       vpcId: vpc.ref,
       tags: [{
         key: 'Name',
-        value: `${systemName}-${envType}-RouteTable`,
+        value: `${systemName}-${envType}-Public-RouteTable`,
       }]
     })
     new CfnRoute(this, 'PublicRoute', {
@@ -121,6 +122,38 @@ export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
     new CfnSubnetRouteTableAssociation(this, 'PublicSubnet1dRouteTableAssociation', {
       routeTableId: publicRouteTable.ref,
       subnetId: subnetPublic1d.ref
+    })
+
+    const privateRouteTable = new CfnRouteTable(this, 'privateRouteTable', {
+      vpcId: vpc.ref,
+      tags: [{
+        key: 'Name',
+        value: `${systemName}-${envType}-Private-RouteTable`,
+      }]
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PrivateSubnet1a1RouteTableAssociation', {
+      routeTableId: privateRouteTable.ref,
+      subnetId: subnetPrivate1a1.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PrivateSubnet1c1RouteTableAssociation', {
+      routeTableId: privateRouteTable.ref,
+      subnetId: subnetPrivate1c1.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PrivateSubnet1d1dRouteTableAssociation', {
+      routeTableId: privateRouteTable.ref,
+      subnetId: subnetPrivate1d1.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PrivateSubnet1a2RouteTableAssociation', {
+      routeTableId: privateRouteTable.ref,
+      subnetId: subnetPrivate1a2.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PrivateSubnet1c2RouteTableAssociation', {
+      routeTableId: privateRouteTable.ref,
+      subnetId: subnetPrivate1c2.ref
+    })
+    new CfnSubnetRouteTableAssociation(this, 'PrivateSubnet1d2dRouteTableAssociation', {
+      routeTableId: privateRouteTable.ref,
+      subnetId: subnetPrivate1d2.ref
     })
   }
 }
