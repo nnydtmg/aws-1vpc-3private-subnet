@@ -19,6 +19,9 @@ Actions:
           Name: "593712103097"
       Name: codecatalyst-demo-env
     Inputs:
+      Variables:
+        - Name: CDK_DEFAULT_REGION
+          Value: ap-northeast-1
       Sources:
         - WorkflowSource
   AWSCDKdeploy_bb:
