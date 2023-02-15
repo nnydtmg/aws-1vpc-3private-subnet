@@ -36,5 +36,8 @@ Actions:
     DependsOn:
       - AWSCDKbootstrap_57
     Inputs:
+      Variables:
+        - Name: CDK_DEFAULT_REGION
+          Value: ap-northeast-1
       Sources:
         - WorkflowSource
