@@ -1,0 +1,38 @@
+Name: Workflow_999f
+SchemaVersion: "1.0"
+
+# Optional - Set automatic triggers.
+Triggers:
+  - Type: Push
+    Branches:
+      - main
+
+# Required - Define action configurations.
+Actions:
+  AWSCDKbootstrap_57:
+    Identifier: aws/cdk-bootstrap@v1
+    Configuration:
+      Region: ap-northeast-1
+    Environment:
+      Connections:
+        - Role: CodeCatalystPreviewDevelopmentAdministrator-2vjknx
+          Name: "593712103097"
+      Name: codecatalyst-demo-env
+    Inputs:
+      Sources:
+        - WorkflowSource
+  AWSCDKdeploy_bb:
+    Identifier: aws/cdk-deploy@v1
+    Configuration:
+      Region: ap-northeast-1
+      StackName: Aws1Vpc3PrivateSubnetStack
+    Environment:
+      Connections:
+        - Role: CodeCatalystPreviewDevelopmentAdministrator-2vjknx
+          Name: "593712103097"
+      Name: codecatalyst-demo-env
+    DependsOn:
+      - AWSCDKbootstrap_57
+    Inputs:
+      Sources:
+        - WorkflowSource
