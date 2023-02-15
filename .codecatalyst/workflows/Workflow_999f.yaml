@@ -39,5 +39,7 @@ Actions:
       Variables:
         - Name: CDK_DEFAULT_REGION
           Value: ap-northeast-1
+        - Name: AWS_REGION
+          Value: ap-northeast-1
       Sources:
         - WorkflowSource
