@@ -26,6 +26,8 @@ Actions:
     Configuration:
       Region: ap-northeast-1
       StackName: Aws1Vpc3PrivateSubnetStack
+    Compute:
+      Type: Lambda
     Environment:
       Connections:
         - Role: CodeCatalystPreviewDevelopmentAdministrator-2vjknx
