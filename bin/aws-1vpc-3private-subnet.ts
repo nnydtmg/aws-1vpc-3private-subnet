@@ -5,6 +5,10 @@ import { Aws1Vpc3PrivateSubnetStack } from '../lib/aws-1vpc-3private-subnet-stac
 
 const app = new cdk.App();
 new Aws1Vpc3PrivateSubnetStack(app, 'Aws1Vpc3PrivateSubnetStack', {
+  env: {
+    account: process.env.CDK_DEFAULT_ACCOUNT,
+    region: process.env.CDK_DEFAULT_REGION,
+  },
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
