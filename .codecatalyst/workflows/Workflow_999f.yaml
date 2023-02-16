@@ -47,24 +47,3 @@ Actions:
           Value: ap-northeast-1
       Sources:
         - WorkflowSource
-  AWSCDKdeploy_76:
-    Identifier: aws/cdk-deploy@v1
-    Configuration:
-      Region: ap-northeast-1
-      StackName: Aws1Vpc3PrivateSubnetStack
-    Environment:
-      Connections:
-        - Role: CodeCatalystPreviewDevelopmentAdministrator-2vjknx
-          Name: "593712103097"
-      Name: codecatalyst-demo-env
-    DependsOn:
-      - Test_ff
-      - AWSCDKbootstrap_57
-    Inputs:
-      Variables:
-        - Name: CDK_DEFAULT_REGION
-          Value: ap-northeast-1
-        - Name: AWS_REGION
-          Value: ap-northeast-1
-      Sources:
-        - WorkflowSource
