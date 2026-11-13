@@ -1,5 +1,5 @@
-import { Match, Template } from '@aws-cdk/assertions';
-import * as cdk from '@aws-cdk/core';
+import { Match, Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib';
 //import { StackDeployment } from 'aws-cdk-lib/pipelines';
 import * as MyAws1Vpc3PrivateSubnetStack from '../lib/aws-1vpc-3private-subnet-stack';
 
