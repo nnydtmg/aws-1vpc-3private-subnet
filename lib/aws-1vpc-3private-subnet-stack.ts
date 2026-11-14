@@ -1,4 +1,5 @@
-import * as cdk from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import {
    CfnVPC,
    CfnSubnet,
@@ -6,12 +7,11 @@ import {
    CfnVPCGatewayAttachment,
    CfnRouteTable,
    CfnRoute,
-   CfnSubnetRouteTableAssociation, 
-   VpcEndpoint
-  } from '@aws-cdk/aws-ec2';
+   CfnSubnetRouteTableAssociation,
+  } from 'aws-cdk-lib/aws-ec2';
 
 export class Aws1Vpc3PrivateSubnetStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const systemName = this.node.tryGetContext('systemName');
